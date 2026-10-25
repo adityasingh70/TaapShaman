@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TAAPSHAMAN · Thermal Resilience Assessment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#faf6f0;--card:#fffdf9;--ink:#2a2118;--muted:#7a6c5d;--line:#eadfce;
+  --accent:#d9480f;--accent-soft:#fdebdc;--good:#2f9e44;--mid:#e8a317;--bad:#d9342b;
+  --shadow:0 1px 2px rgba(60,35,10,.06),0 8px 24px rgba(60,35,10,.06);
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#17120d;--card:#211a13;--ink:#f3eadf;--muted:#a69886;--line:#33291f;
+  --accent:#ff8a4c;--accent-soft:#3a2415;--good:#51cf66;--mid:#fcc419;--bad:#ff6b61;--shadow:none}
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 Inter,system-ui,sans-serif;
+  background-image:radial-gradient(900px 400px at 85% -10%,var(--accent-soft),transparent 70%)}
+.wrap{max-width:1180px;margin:0 auto;padding:32px 20px 56px}
+header{display:flex;align-items:center;gap:14px;margin-bottom:6px}
+.logo{width:44px;height:44px;border-radius:12px;background:var(--accent);display:grid;place-items:center;color:#fff}
+h1{font:700 30px/1.1 Fraunces,Georgia,serif;margin:0;letter-spacing:-.01em}
+.sub{color:var(--muted);margin:6px 0 26px;max-width:680px}
+.grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:24px;align-items:start}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+.sec{padding:20px 22px;margin-bottom:18px}
+.sec h2{font:600 18px Fraunces,Georgia,serif;margin:0 0 14px;display:flex;align-items:center;gap:8px}
+.sec h2:before{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 22px}
+@media(max-width:600px){.fields{grid-template-columns:1fr}}
+.f label,.f .lab{display:flex;justify-content:space-between;align-items:baseline;font-weight:500;font-size:13px;margin-bottom:6px;gap:8px}
+.f .lab span:first-child{color:var(--muted)}
+.val{font-variant-numeric:tabular-nums;font-weight:600;color:var(--ink)}
+input[type=range]{width:100%;accent-color:var(--accent);margin:0}
+select{width:100%;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pills input{position:absolute;opacity:0;pointer-events:none}
+.pills label{margin:0;padding:6px 12px;border:1px solid var(--line);border-radius:999px;cursor:pointer;font-weight:500;background:var(--bg);transition:.15s}
+.pills input:checked+label{background:var(--accent);border-color:var(--accent);color:#fff}
+.pills input:focus-visible+label{outline:2px solid var(--accent);outline-offset:2px}
+.side{position:sticky;top:18px;display:grid;gap:18px}
+@media(max-width:900px){.side{position:static}}
+.result{padding:24px;text-align:center}
+.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.gauge{position:relative;width:260px;max-width:100%;margin:6px auto 0}
+.gauge svg{width:100%;display:block}
+.track{stroke:var(--line)}
+.bar{transition:stroke-dasharray .6s cubic-bezier(.2,.8,.2,1),stroke .3s}
+.score{position:absolute;left:0;right:0;bottom:6px}
+.score b{font:700 52px/1 Fraunces,Georgia,serif;font-variant-numeric:tabular-nums}
+.score small{display:block;color:var(--muted);font-size:12px}
+.badge{display:inline-block;margin-top:10px;padding:5px 14px;border-radius:999px;font-weight:600;font-size:13px;color:#fff;transition:background .3s}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px}
+.stat{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:12px 6px}
+.stat b{display:block;font:700 22px Fraunces,Georgia,serif;font-variant-numeric:tabular-nums}
+.stat span{font-size:11.5px;color:var(--muted);line-height:1.3;display:block}
+.sug{padding:20px 22px}
+.sug h3{margin:0 0 10px;font:600 17px Fraunces,Georgia,serif}
+.sug ol{margin:0;padding-left:20px}
+.sug li{margin:7px 0}
+.note{padding:14px 16px;border-radius:14px;background:var(--accent-soft);font-size:12.5px;color:var(--ink)}
+.note b{color:var(--accent)}
+.btn{width:100%;margin-top:18px;padding:12px;border:0;border-radius:12px;background:var(--accent);color:#fff;font:600 15px Inter,sans-serif;cursor:pointer}
+.btn:hover{filter:brightness(1.07)}
+.dim{opacity:.55;transition:opacity .2s}
+.foot{margin-top:6px;color:var(--muted);font-size:12px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo" aria-hidden="true">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.8V4a2 2 0 0 0-4 0v10.8a4 4 0 1 0 4 0z"/></svg>
+    </div>
+    <h1>TAAPSHAMAN</h1>
+  </header>
+  <p class="sub">Describe a building and its surroundings. The model estimates indoor heat, a preliminary Thermal Resilience Score, and screening ideas for retrofits. Results update as you adjust the inputs.</p>
+
+  <div class="grid">
+    <form id="form" onsubmit="return false"></form>
+
+    <aside class="side">
+      <div class="card result" id="result">
+        <div class="eyebrow">Thermal Resilience Score</div>
+        <div class="gauge">
+          <svg viewBox="0 0 220 125" aria-hidden="true">
+            <path class="track" d="M20 110A90 90 0 0 1 200 110" fill="none" stroke-width="16" stroke-linecap="round" pathLength="100"/>
+            <path id="bar" class="bar" d="M20 110A90 90 0 0 1 200 110" fill="none" stroke="var(--mid)" stroke-width="16" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100"/>
+          </svg>
+          <div class="score"><b id="score">–</b><small>out of 100</small></div>
+        </div>
+        <span class="badge" id="badge" style="background:var(--muted)">Calculating…</span>
+        <div class="stats">
+          <div class="stat"><b id="maxT">–</b><span>Daily max indoor °C</span></div>
+          <div class="stat"><b id="hotT">–</b><span>Indoor °C on a hot day</span></div>
+          <div class="stat"><b id="hrs">–</b><span>Hours above 28 °C</span></div>
+        </div>
+      </div>
+
+      <div class="card sug">
+        <h3>Potential retrofit measures</h3>
+        <ol id="sug"></ol>
+      </div>
+
+      <div class="note"><b>Synthetic data.</b> The model was trained on synthetic outcomes, so predictions, the score and suggestions are illustrative only, not verified estimates for an actual building.
+        <div id="metrics" style="margin-top:6px;color:var(--muted)"></div></div>
+    </aside>
+  </div>
+</div>
+
+<script>
+const form = document.getElementById('form');
+const state = {};
+let timer, seq = 0;
+
+const el = (tag, attrs = {}, ...kids) => {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) k === 'class' ? n.className = v : n.setAttribute(k, v);
+  kids.forEach(k => n.append(k));
+  return n;
+};
+const slug = s => s.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
+const clean = s => s.replace(/\s*\((?:C, )?synthetic[^)]*\)/i, '').replace(/\s*\(synthetic\)/i, '').trim();
+const unitOf = s => { const m = s.match(/\(([^)]*)\)/g); return m ? m.map(x => x.slice(1, -1)).join(' ').replace(/,?\s*synthetic,?\s*/i, '').replace(/^C$/, '°C').trim() : ''; };
+
+function numberField(f) {
+  const id = 'f-' + slug(f.name), unit = unitOf(f.name);
+  const pad = (f.max - f.min) * 0.1 || 1;
+  const lo = Math.max(0, Math.floor(f.min - pad)), hi = Math.ceil(f.max + pad);
+  const out = el('span', { class: 'val' });
+  const input = el('input', { type: 'range', id, min: lo, max: hi, step: f.step, value: f.default });
+  const sync = () => { state[f.name] = parseFloat(input.value); out.textContent = state[f.name] + (unit && !unit.includes('.') ? ' ' + unit : ''); };
+  input.addEventListener('input', () => { sync(); queue(); });
+  sync();
+  return el('div', { class: 'f' }, el('label', { for: id }, el('span', {}, clean(f.name)), out), input);
+}
+
+function choiceField(f) {
+  state[f.name] = f.default;
+  const wrap = el('div', { class: 'f' }, el('div', { class: 'lab' }, el('span', {}, clean(f.name))));
+  if (f.choices.length <= 4) {
+    const pills = el('div', { class: 'pills', role: 'radiogroup' });
+    f.choices.forEach((c, i) => {
+      const id = `f-${slug(f.name)}-${i}`;
+      const r = el('input', { type: 'radio', name: slug(f.name), id, value: c });
+      if (c === f.default) r.checked = true;
+      r.addEventListener('change', () => { state[f.name] = c; queue(); });
+      pills.append(r, el('label', { for: id }, c));
+    });
+    wrap.append(pills);
+  } else {
+    const sel = el('select', { 'aria-label': clean(f.name) });
+    f.choices.forEach(c => sel.append(el('option', { value: c }, c)));
+    sel.addEventListener('change', () => { state[f.name] = sel.value; queue(); });
+    wrap.append(sel);
+  }
+  return wrap;
+}
+
+function build(schema) {
+  schema.sections.forEach(sec => {
+    const grid = el('div', { class: 'fields' });
+    sec.fields.forEach(f => grid.append(f.type === 'number' ? numberField(f) : choiceField(f)));
+    form.append(el('section', { class: 'card sec' }, el('h2', {}, sec.title), grid));
+  });
+  const btn = el('button', { class: 'btn', type: 'button' }, 'Assess this building');
+  btn.addEventListener('click', predict);
+  form.append(btn);
+  const m = schema.metrics, k = Object.keys(m)[0];
+  document.getElementById('metrics').textContent =
+    `Trained on ${schema.n_rows} rows · held-out MAE ${m[k].mae} °C, R² ${m[k].r2} (synthetic).`;
+}
+
+const queue = () => { clearTimeout(timer); timer = setTimeout(predict, 250); };
+
+async function predict() {
+  const mine = ++seq;
+  document.getElementById('result').classList.add('dim');
+  try {
+    const r = await fetch('/api/predict', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state) });
+    const d = await r.json();
+    if (mine !== seq) return;
+    show(d);
+  } catch (e) {
+    document.getElementById('badge').textContent = 'Could not reach the model';
+  }
+  document.getElementById('result').classList.remove('dim');
+}
+
+function show(d) {
+  const colour = d.score >= 75 ? 'var(--good)' : d.score >= 50 ? 'var(--mid)' : 'var(--bad)';
+  const bar = document.getElementById('bar');
+  bar.setAttribute('stroke-dasharray', `${d.score} 100`);
+  bar.setAttribute('stroke', colour);
+  document.getElementById('score').textContent = d.score.toFixed(1);
+  const b = document.getElementById('badge');
+  b.textContent = d.rating; b.style.background = colour;
+  document.getElementById('maxT').textContent = d.max_temp.toFixed(1);
+  document.getElementById('hotT').textContent = d.hot_temp.toFixed(1);
+  document.getElementById('hrs').textContent = d.hours_above_28.toFixed(1);
+  const ol = document.getElementById('sug'); ol.replaceChildren();
+  d.suggestions.forEach(s => ol.append(el('li', {}, s)));
+}
+
+fetch('/api/schema').then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+  .then(s => { build(s); predict(); })
+  .catch(() => {
+    form.append(el('div', { class: 'card sec' },
+      el('h2', {}, 'Cannot reach the model'),
+      el('p', {}, 'Start the server with "python app.py" and open http://127.0.0.1:5000 in your browser. Opening index.html directly from a folder will not work, and the terminal will show any error (for example a missing CSV).')));
+    document.getElementById('badge').textContent = 'Model not running';
+  });
+</script>
+</body>
+</html>
